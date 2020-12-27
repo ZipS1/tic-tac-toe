@@ -1,9 +1,11 @@
 import pygame as pg
 from enum import Enum
 
-GAME_FIELD_WIDTH = 3
-GAME_FIELD_HEIGHT = 3
+WINDOW_SIZE = (800, 600)
+WINDOW_TITLE = "Tic-Tac-Toe"
+GAME_FIELD_SIZE = (3, 3)
 CELL_SIZE = 50
+
 
 class Cell(Enum):
     VOID = 0
@@ -28,6 +30,14 @@ class GameWindow:
     Contains mainloop of the game and game manager.
     """
     def __init__(self):
+        pg.init()
+        self._width = WINDOW_SIZE[0]
+        self._height = WINDOW_SIZE[1]
+        self._title = WINDOW_TITLE
+        self._screen = pg.display.set_mode((self._width, self._height))
+        pg.display.set_caption(self._title)
+        clock = pg.time.Clock()
+
         self._field_widget = GameFieldView()
         player1 = Player("Petr", Cell.CROSS)
         player2 = Player("Vasyan", Cell.ZERO)
@@ -41,16 +51,15 @@ class GameWindow:
                 if event.type == pg.QUIT:
                     finished = True
                 elif event.type == pg.MOUSEBUTTONUP():
-                    event.x, event.y = x, y
-                    click_area = self.get_click_area()
+                    x, y = pg.mouse.get_pos()
+                    click_area = self.get_click_area(x, y)
 
                     if click_area == "FIELD":
                         i, j = self._field_widget.get_cell_pos(x, y)
                         self._game_manager.handle_click(i, j)
 
-    def get_click_area(self):
+    def get_click_area(self, x, y):
         pass
-
 
 
 class GameManager:
@@ -58,7 +67,8 @@ class GameManager:
     def __init__(self, player1, player2):
         self._players = [player1, player2]
         self._current_player = 0
-        self._field = GameField(GAME_FIELD_WIDTH, GAME_FIELD_HEIGHT)
+        game_field_width, game_field_height = GAME_FIELD_SIZE
+        self._field = GameField(game_field_width, game_field_height)
 
     def handle_click(self, i, j):
         pass
@@ -72,7 +82,6 @@ class GameField:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-
 
 
 class GameFieldView:
