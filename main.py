@@ -5,7 +5,8 @@ from colors import *
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FIELD_SIZE = (3, 3)
-CELL_SIZE = 50
+CELL_SIZE = 100
+FIELD_LINE_WIDTH = 5
 TICKRATE = 60
 
 
@@ -36,19 +37,21 @@ class GameWindow:
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
         self._title = WINDOW_TITLE
-        self._screen = pg.display.set_mode((self._width, self._height))
+        self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
-        self._screen.fill(WHITE)
 
         player1 = Player("Petr", Cell.CROSS)
         player2 = Player("Vasyan", Cell.ZERO)
         self._game_manager = GameManager(player1, player2)
-        self._field_widget = GameFieldView(self._game_manager.field)
+        field = self._game_manager.field
+        self._field_widget = GameFieldView(self.screen, field)
 
     def main_loop(self):
         finished = False
         clock = pg.time.Clock()
         while not finished:
+            self.screen.fill(WHITE)
+            self._field_widget.draw()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -91,17 +94,20 @@ class GameField:
         self.cells = [[Cell.VOID]*self.width for i in range(self.height)]
 
 
-class GameFieldView:
+class GameFieldView: # field coords 400, 50
     """Game field widget.
 
     Reflects field on window, initially handles click on field.
     """
-    def __init__(self, field):
+    def __init__(self, screen, field):
         self.field = field
-        self.width = self.field.width * CELL_SIZE
-        self.height = self.field.height * CELL_SIZE
-        # load cell pictures
-        pass
+        self.width = (self.field.width*CELL_SIZE
+                            + FIELD_LINE_WIDTH*(field.width - 1))
+        self.height = (self.field.height*CELL_SIZE
+                            + FIELD_LINE_WIDTH*(field.height - 1))
+        self.screen = screen
+        self.cross_image = pg.image.load("resources/cross.png").convert_alpha()
+        self.zero_image = pg.image.load("resources/zero.png").convert_alpha()
 
     def get_cell_pos(self, x, y):
         """Returns coords of cell in field."""
@@ -109,13 +115,16 @@ class GameFieldView:
 
     def draw(self):
         """Draw game field on game window."""
-        pass
+        print("Draw game field...")
+        print("Width", self.width)
+        print("Height", self.height)
+
 
 
 def main():
     window = GameWindow()
     window.main_loop()
-    print("game over")
+    pg.quit()
 
 
 if __name__ == '__main__':
