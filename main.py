@@ -47,6 +47,8 @@ class GameWindow:
         finished = False
 
         while not finished:
+            pg.time.Clock().tick(TICKRATE)
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     finished = True
