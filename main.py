@@ -1,12 +1,13 @@
 import pygame as pg
 from enum import Enum
 from colors import *
+from math import floor
 
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
-GAME_FIELD_SIZE = (3, 3)
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
+FIELD_Y = 50
 TICKRATE = 60
 
 
@@ -51,7 +52,7 @@ class GameWindow:
         clock = pg.time.Clock()
         while not finished:
             self.screen.fill(WHITE)
-            self._field_widget.draw()
+            self._field_widget.draw(FIELD_Y)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -76,7 +77,7 @@ class GameManager:
     def __init__(self, player1, player2):
         self._players = [player1, player2]
         self._current_player = 0
-        self.field = GameField(*GAME_FIELD_SIZE)
+        self.field = GameField(3, 3)
 
     def handle_click(self, i, j):
         print("click handled")
@@ -94,31 +95,48 @@ class GameField:
         self.cells = [[Cell.VOID]*self.width for i in range(self.height)]
 
 
-class GameFieldView: # field coords 400, 50
+class GameFieldView:
     """Game field widget.
 
     Reflects field on window, initially handles click on field.
     """
     def __init__(self, screen, field):
         self.field = field
-        self.width = (self.field.width*CELL_SIZE
-                            + FIELD_LINE_WIDTH*(field.width - 1))
-        self.height = (self.field.height*CELL_SIZE
-                            + FIELD_LINE_WIDTH*(field.height - 1))
+        self.width = (self.field.width*CELL_SIZE +
+                            FIELD_LINE_WIDTH*(field.width - 1))
+        self.height = (self.field.height*CELL_SIZE +
+                            FIELD_LINE_WIDTH*(field.height - 1))
         self.screen = screen
-        self.cross_image = pg.image.load("resources/cross.png").convert_alpha()
-        self.zero_image = pg.image.load("resources/zero.png").convert_alpha()
+        cross_image = pg.image.load("resources/cross.png").convert_alpha()
+        zero_image = pg.image.load("resources/zero.png").convert_alpha()
+        cell_res = (CELL_SIZE, CELL_SIZE)
+        self.cross_image = pg.transform.scale(cross_image, cell_res)
+        self.zero_image = pg.transform.scale(zero_image, cell_res)
 
     def get_cell_pos(self, x, y):
         """Returns coords of cell in field."""
         return 0, 0
 
-    def draw(self):
+    def draw(self, y):
         """Draw game field on game window."""
-        print("Draw game field...")
-        print("Width", self.width)
-        print("Height", self.height)
-
+        window_width = WINDOW_SIZE[0]
+        x = (window_width - self.width) // 2
+        pg.draw.line(self.screen, BLACK,
+            (x + CELL_SIZE + FIELD_LINE_WIDTH//2, y),
+            (x + CELL_SIZE + FIELD_LINE_WIDTH//2, y + self.height),
+            FIELD_LINE_WIDTH)
+        pg.draw.line(self.screen, BLACK,
+            (x + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5), y),
+            (x + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5), y + self.height),
+            FIELD_LINE_WIDTH)
+        pg.draw.line(self.screen, BLACK,
+            (x, y + CELL_SIZE + FIELD_LINE_WIDTH//2),
+            (x + self.width, y + CELL_SIZE + FIELD_LINE_WIDTH//2),
+            FIELD_LINE_WIDTH)
+        pg.draw.line(self.screen, BLACK,
+            (x, y + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5)),
+            (x + self.width, y + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5)),
+            FIELD_LINE_WIDTH)
 
 
 def main():
