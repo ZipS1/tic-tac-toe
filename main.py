@@ -45,9 +45,8 @@ class GameWindow:
 
     def main_loop(self):
         finished = False
-
+        clock = pg.time.Clock()
         while not finished:
-            pg.time.Clock().tick(TICKRATE)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -61,7 +60,7 @@ class GameWindow:
                         self._game_manager.handle_click(i, j)
 
             pg.display.flip()
-            pg.time.Clock().tick(TICKRATE)
+            clock.tick(TICKRATE)
 
     def get_click_area(self, x, y):
         return "FIELD"
