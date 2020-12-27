@@ -1,5 +1,6 @@
 import pygame as pg
 from enum import Enum
+from colors import *
 
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
@@ -37,6 +38,7 @@ class GameWindow:
         self._title = WINDOW_TITLE
         self._screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
+        self._screen.fill(WHITE)
 
         player1 = Player("Petr", Cell.CROSS)
         player2 = Player("Vasyan", Cell.ZERO)
