@@ -4,8 +4,8 @@ from math import floor
 
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
-CELL_SIZE = 100
-FIELD_LINE_WIDTH = 5
+CELL_SIZE = 150
+FIELD_LINE_WIDTH = 10
 FIELD_Y = 50
 TICKRATE = 60
 
@@ -107,7 +107,7 @@ class GameManager:
             if cells[0][0] == cells[1][1] and cells[1][1] == cells[2][2]:
                 return cells[0][0]
 
-        if cells[0][0] != VOID:
+        if cells[2][0] != VOID:
             if cells[2][0] == cells[1][1] and cells[1][1] == cells[0][2]:
                 return cells[2][0]
 
