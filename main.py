@@ -61,7 +61,7 @@ class GameWindow:
                         if self._game_manager.check_win():
                             win_type = self._game_manager.check_win()
                             name = self._game_manager.get_player_name(win_type)
-                            print("Player", name," won!")
+                            print("Player", name,"won!")
 
             pg.display.flip()
             clock.tick(TICKRATE)
@@ -81,20 +81,42 @@ class GameWindow:
 class GameManager:
     """Game manager, running proccesses."""
     def __init__(self, player1, player2):
-        self.players = [player1, player2]
+        self._players = [player1, player2]
         self._curplayer = 0
         self.field = GameField(3, 3)
 
     def handle_click(self, x, y):
         if self.field.cells[y][x] == 0:
-            self.field.cells[y][x] = self.players[self._curplayer].cell_type
+            self.field.cells[y][x] = self._players[self._curplayer].cell_type
             self._curplayer = 1 - self._curplayer
 
     def check_win(self):
-        pass
+        cells = self.field.cells
 
-    def get_player_name(self):
-        pass
+        for y in range(self.field.height):
+            if cells[y][0] != VOID:
+                if cells[y][0] == cells[y][1] and cells[y][1] == cells[y][2]:
+                    return cells[y][0]
+
+        for x in range(self.field.width):
+            if cells[0][x] != VOID:
+                if cells[0][x] == cells[1][x] and cells[1][x] == cells[2][x]:
+                    return cells[0][x]
+
+        if cells[0][0] != VOID:
+            if cells[0][0] == cells[1][1] and cells[1][1] == cells[2][2]:
+                return cells[0][0]
+
+        if cells[0][0] != VOID:
+            if cells[2][0] == cells[1][1] and cells[1][1] == cells[0][2]:
+                return cells[2][0]
+
+        return VOID
+
+    def get_player_name(self, sought_type):
+        for player in self._players:
+            if player.cell_type == sought_type:
+                return player.name
 
 
 class GameField:
@@ -131,8 +153,8 @@ class GameFieldView:
 
     def get_cell_pos(self, x, y):
         """Returns coords of cell in field."""
-        return ((x-self.x)*self.field.width//self.width,
-                (y-self.y)*self.field.height//self.height)
+        return ((x - self.x)*self.field.width//self.width,
+                (y - self.y)*self.field.height//self.height)
 
     def draw(self):
         """Draw game field on game window."""
@@ -159,10 +181,10 @@ class GameFieldView:
             for x in range(self.field.width):
                 if self.field.cells[y][x] == 1:
                     x_coord, y_coord = self._get_image_coords(x, y)
-                    self.screen.blit(self._cross_image, (x_coord, y_coord))
+                    self.screen.blit(self._zero_image, (x_coord, y_coord))
                 elif self.field.cells[y][x] == 2:
                     x_coord, y_coord = self._get_image_coords(x, y)
-                    self.screen.blit(self._zero_image, (x_coord, y_coord))
+                    self.screen.blit(self._cross_image, (x_coord, y_coord))
 
     def _get_image_coords(self, i, j):
         x = self.x + i*(CELL_SIZE + FIELD_LINE_WIDTH)
