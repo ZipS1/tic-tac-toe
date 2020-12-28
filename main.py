@@ -1,6 +1,6 @@
 import pygame as pg
 from enum import Enum
-from colors import *
+from constants import *
 from math import floor
 
 WINDOW_SIZE = (800, 600)
@@ -9,10 +9,6 @@ CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 50
 TICKRATE = 60
-
-VOID = 0
-ZERO = 1
-CROSS = 2
 
 
 class Player:
