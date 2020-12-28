@@ -103,8 +103,6 @@ class GameField:
         self.cells = [[Cell.VOID]*self.width for i in range(self.height)]
 
 
-
-
 class GameFieldView:
     """Game field widget.
 
@@ -133,7 +131,6 @@ class GameFieldView:
 
     def draw(self):
         """Draw game field on game window."""
-        window_width = WINDOW_SIZE[0]
         pg.draw.line(self.screen, BLACK,
             (self.x + CELL_SIZE + FIELD_LINE_WIDTH//2, self.y),
             (self.x + CELL_SIZE + FIELD_LINE_WIDTH//2, self.y + self.height),
@@ -152,6 +149,9 @@ class GameFieldView:
             (self.x + self.width,
              self.y + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5)),
             FIELD_LINE_WIDTH)
+
+        for cell in self.field.cells:
+            pass
 
 
 def main():
