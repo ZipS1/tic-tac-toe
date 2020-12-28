@@ -10,11 +10,9 @@ FIELD_LINE_WIDTH = 5
 FIELD_Y = 50
 TICKRATE = 60
 
-
-class Cell(Enum):
-    VOID = 0
-    CROSS = 1
-    ZERO = 2
+VOID = 0
+ZERO = 1
+CROSS = 2
 
 
 class Player:
@@ -41,8 +39,8 @@ class GameWindow:
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
 
-        player1 = Player("Petr", Cell.CROSS)
-        player2 = Player("Vasyan", Cell.ZERO)
+        player1 = Player("Petr", CROSS)
+        player2 = Player("Vasyan", ZERO)
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
@@ -84,12 +82,13 @@ class GameManager:
     """Game manager, running proccesses."""
     def __init__(self, player1, player2):
         self._players = [player1, player2]
-        self._current_player = 0
+        self._curplayer = 0
         self.field = GameField(3, 3)
 
-    def handle_click(self, i, j):
-        print("click handled")
-        print(i, j)
+    def handle_click(self, x, y):
+        if self.field.cells[y][x] == 0:
+            self.field.cells[y][x] = self._players[self._curplayer].cell_type
+            self._curplayer = 1 - self._curplayer
 
 
 class GameField:
@@ -100,7 +99,7 @@ class GameField:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.cells = [[Cell.VOID]*self.width for i in range(self.height)]
+        self.cells = [[VOID]*self.width for i in range(self.height)]
 
 
 class GameFieldView:
@@ -150,9 +149,19 @@ class GameFieldView:
              self.y + 2*CELL_SIZE + floor(FIELD_LINE_WIDTH*1.5)),
             FIELD_LINE_WIDTH)
 
-        for cell in self.field.cells:
-            pass
+        for y in range(self.field.height):
+            for x in range(self.field.width):
+                if self.field.cells[y][x] == 1:
+                    x_coord, y_coord = self._get_image_coords(x, y)
+                    self.screen.blit(self._cross_image, (x_coord, y_coord))
+                elif self.field.cells[y][x] == 2:
+                    x_coord, y_coord = self._get_image_coords(x, y)
+                    self.screen.blit(self._zero_image, (x_coord, y_coord))
 
+    def _get_image_coords(self, i, j):
+        x = self.x + i*(CELL_SIZE + FIELD_LINE_WIDTH)
+        y = self.y + j*(CELL_SIZE + FIELD_LINE_WIDTH)
+        return x, y
 
 def main():
     window = GameWindow()
