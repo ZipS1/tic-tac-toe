@@ -1,5 +1,4 @@
 import pygame as pg
-from enum import Enum
 from constants import *
 from math import floor
 
@@ -59,6 +58,11 @@ class GameWindow:
                         i, j = self._field_widget.get_cell_pos(x, y)
                         self._game_manager.handle_click(i, j)
 
+                        if self._game_manager.check_win():
+                            win_type = self._game_manager.check_win()
+                            name = self._game_manager.get_player_name(win_type)
+                            print("Player", name," won!")
+
             pg.display.flip()
             clock.tick(TICKRATE)
 
@@ -77,14 +81,20 @@ class GameWindow:
 class GameManager:
     """Game manager, running proccesses."""
     def __init__(self, player1, player2):
-        self._players = [player1, player2]
+        self.players = [player1, player2]
         self._curplayer = 0
         self.field = GameField(3, 3)
 
     def handle_click(self, x, y):
         if self.field.cells[y][x] == 0:
-            self.field.cells[y][x] = self._players[self._curplayer].cell_type
+            self.field.cells[y][x] = self.players[self._curplayer].cell_type
             self._curplayer = 1 - self._curplayer
+
+    def check_win(self):
+        pass
+
+    def get_player_name(self):
+        pass
 
 
 class GameField:
@@ -158,6 +168,7 @@ class GameFieldView:
         x = self.x + i*(CELL_SIZE + FIELD_LINE_WIDTH)
         y = self.y + j*(CELL_SIZE + FIELD_LINE_WIDTH)
         return x, y
+
 
 def main():
     window = GameWindow()
