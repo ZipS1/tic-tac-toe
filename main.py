@@ -11,6 +11,7 @@ FIELD_DISTANCE = 50
 STATUS_FONT_SIZE = 60
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
+SCREAMER_DURATION = 20
 
 
 class Player:
@@ -77,7 +78,7 @@ class GameWindow:
             if finished:
                 self.screen.blit(self._screamer_image, (0, 0))
                 pg.display.flip()
-                pg.time.wait(500)
+                pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             clock.tick(TICKRATE)
