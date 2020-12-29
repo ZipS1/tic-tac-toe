@@ -8,7 +8,8 @@ CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 50
 FIELD_DISTANCE = 50
-STATUS_FONT_SIZE = 30
+STATUS_FONT_SIZE = 60
+GAME_ROUND_DELAY = 1000
 TICKRATE = 60
 
 
@@ -41,10 +42,6 @@ class GameWindow:
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
-
-        self.status_y = (self._field_widget.height +
-                                FIELD_DISTANCE + FIELD_Y)
-        self.status_x = self._width // 2
         self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
 
     def main_loop(self):
@@ -65,9 +62,17 @@ class GameWindow:
                         self._game_manager.handle_click(i, j)
 
             self._field_widget.draw()
-            self._draw_game_status(self._game_manager.game_status)
+
+            if self._game_manager.check_game_ended():
+                self._draw_game_status(self._game_manager.game_status)
+                pg.display.flip()
+                pg.time.wait(GAME_ROUND_DELAY)
+                self._game_manager._change_sides()
+                self._game_manager._new_field()
+            else:
+                self._draw_game_status(self._game_manager.game_status)
+
             pg.display.flip()
-            self._game_manager.check_for_win()
             clock.tick(TICKRATE)
 
     def _get_click_area(self, x, y):
@@ -83,7 +88,13 @@ class GameWindow:
 
     def _draw_game_status(self, status):
         status_surface = self.status_font.render(status, False, BLACK)
-        self.screen.blit(status_surface, (self.status_x, self.status_y))
+        status_width  = status_surface.get_width()
+
+        y = (self._field_widget.height +
+                                FIELD_DISTANCE + FIELD_Y)
+        x = (self._width - status_width)// 2
+
+        self.screen.blit(status_surface, (x, y))
 
 
 class GameManager:
@@ -100,14 +111,21 @@ class GameManager:
             self._curplayer = 1 - self._curplayer
             self.game_status = f"{self._players[self._curplayer].name}'s turn"
 
-    def check_for_win(self):
+            self.field.filled_cells += 1
+
+
+    def check_game_ended(self):
         winner = self._check_win()
         if winner:
             name = self._get_player_name(winner)
             self.game_status = f"Player {name} won!"
-            pg.time.wait(1000)
-            self._change_sides()
-            self.new_field()
+            return True
+
+        if self.field.filled_cells == self.field.width * self.field.height:
+            self.game_status = "It's a draw!"
+            return True
+
+        return False
 
     def _check_win(self):
         cells = self.field.cells
@@ -142,10 +160,11 @@ class GameManager:
             if player.cell_type == sought_type:
                 return ind
 
-    def new_field(self):
-        field = self.field
+    def _new_field(self):
         self.field.cells = [[VOID]*self.field.width
                             for i in range(self.field.height)]
+        self.field.filled_cells = 0
+        self.game_status = f"{self._players[self._curplayer].name}'s turn"
 
     def _change_sides(self):
         player1, player2 = self._players
@@ -162,6 +181,7 @@ class GameField:
         self.width = width
         self.height = height
         self.cells = [[VOID]*self.width for i in range(self.height)]
+        self.filled_cells = 0
 
 
 class GameFieldView:
