@@ -6,9 +6,12 @@ WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
-FIELD_Y = 50
-FIELD_DISTANCE = 50
+FIELD_Y = 30
+STATUS_WIDGET_DISTANCE_FROM_FIELD = 25
+SCORE_WIDGET_DISTANCE_FROM_BOTTOM = 175
+SCORE_DISTANCE_FROM_WORD_SCORE = 45
 STATUS_FONT_SIZE = 60
+SCORE_FONT_SIZE = 70
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
 SCREAMER_DURATION = 20
@@ -45,6 +48,7 @@ class GameWindow:
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
         self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
+        self.score_font = pg.font.SysFont('Comic Sans MS', SCORE_FONT_SIZE)
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self.score = self._game_manager.get_score()
@@ -102,15 +106,25 @@ class GameWindow:
     def _draw_game_status(self, status):
         status_surface = self.status_font.render(status, False, BLACK)
         status_width  = status_surface.get_width()
-
+        x = (self._width - status_width) // 2
         y = (self._field_widget.height +
-                                FIELD_DISTANCE + FIELD_Y)
-        x = (self._width - status_width)// 2
-
+                                STATUS_WIDGET_DISTANCE_FROM_FIELD + FIELD_Y)
         self.screen.blit(status_surface, (x, y))
 
     def _draw_score(self, score):
-        pass
+        word_surface = self.score_font.render("SCORE", False, BLACK)
+        word_width = word_surface.get_width()
+        word_x = (self._width - word_width) // 2
+        word_y = self._height - SCORE_WIDGET_DISTANCE_FROM_BOTTOM
+        self.screen.blit(word_surface, (word_x, word_y))
+
+        values = list(self.score.values())
+        score_string = f"{values[0]} : {values[1]}"
+        score_surface = self.score_font.render(score_string, False, BLACK)
+        score_width = score_surface.get_width()
+        score_x = (self._width - score_width) // 2
+        score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
+        self.screen.blit(score_surface, (score_x, score_y))
 
 
 class GameManager:
@@ -135,7 +149,7 @@ class GameManager:
         if winning_cell:
             winner = self._players[self._get_index_of_type(winning_cell)]
             name = winner.name
-            winner.win_count =+ 1
+            winner.win_count += 1
             self.game_status = f"Player {name} won!"
             return True
 
