@@ -11,6 +11,7 @@ FIELD_DISTANCE = 50
 STATUS_FONT_SIZE = 60
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
+SCREAMER_DURATION = 20
 
 
 class Player:
@@ -43,6 +44,8 @@ class GameWindow:
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
         self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
+        screamer_image = pg.image.load("resources/screamer.jpeg")
+        self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
 
     def main_loop(self):
         finished = False
@@ -67,10 +70,15 @@ class GameWindow:
                 self._draw_game_status(self._game_manager.game_status)
                 pg.display.flip()
                 pg.time.wait(GAME_ROUND_DELAY)
-                self._game_manager._change_sides()
-                self._game_manager._new_field()
+                self._game_manager.change_sides()
+                self._game_manager.new_field()
             else:
                 self._draw_game_status(self._game_manager.game_status)
+
+            if finished:
+                self.screen.blit(self._screamer_image, (0, 0))
+                pg.display.flip()
+                pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             clock.tick(TICKRATE)
@@ -160,13 +168,13 @@ class GameManager:
             if player.cell_type == sought_type:
                 return ind
 
-    def _new_field(self):
+    def new_field(self):
         self.field.cells = [[VOID]*self.field.width
                             for i in range(self.field.height)]
         self.field.filled_cells = 0
         self.game_status = f"{self._players[self._curplayer].name}'s turn"
 
-    def _change_sides(self):
+    def change_sides(self):
         player1, player2 = self._players
         player1.cell_type,player2.cell_type=player2.cell_type,player1.cell_type
         self._curplayer = self._get_index_of_type(CROSS)
