@@ -45,7 +45,6 @@ class GameWindow:
         clock = pg.time.Clock()
         while not finished:
             self.screen.fill(WHITE)
-            self._field_widget.draw()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -58,12 +57,9 @@ class GameWindow:
                         i, j = self._field_widget.get_cell_pos(x, y)
                         self._game_manager.handle_click(i, j)
 
-                        if self._game_manager.check_win():
-                            win_type = self._game_manager.check_win()
-                            name = self._game_manager.get_player_name(win_type)
-                            print("Player", name,"won!")
-
+            self._field_widget.draw()
             pg.display.flip()
+            self._game_manager.check_for_win()
             clock.tick(TICKRATE)
 
     def get_click_area(self, x, y):
@@ -90,7 +86,17 @@ class GameManager:
             self.field.cells[y][x] = self._players[self._curplayer].cell_type
             self._curplayer = 1 - self._curplayer
 
-    def check_win(self):
+    def check_for_win(self):
+        winner_status = self._check_win()
+        if winner_status:
+            win_type = winner_status
+            name = self.get_player_name(win_type)
+            print("Player", name,"won!")
+            pg.time.wait(1000)
+            self._change_sides()
+            self.new_field()
+
+    def _check_win(self):
         cells = self.field.cells
 
         for y in range(self.field.height):
@@ -117,6 +123,15 @@ class GameManager:
         for player in self._players:
             if player.cell_type == sought_type:
                 return player.name
+
+    def new_field(self):
+        field = self.field
+        self.field.cells = [[VOID]*self.field.width
+                            for i in range(self.field.height)]
+
+    def _change_sides(self):
+        player1, player2 = self._players
+        player1.cell_type,player2.cell_type=player2.cell_type,player1.cell_type
 
 
 class GameField:
