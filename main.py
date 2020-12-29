@@ -78,7 +78,7 @@ class GameManager:
     """Game manager, running proccesses."""
     def __init__(self, player1, player2):
         self._players = [player1, player2]
-        self._curplayer = 0
+        self._curplayer = self._get_index_of_type(CROSS)
         self.field = GameField(3, 3)
 
     def handle_click(self, x, y):
@@ -87,10 +87,9 @@ class GameManager:
             self._curplayer = 1 - self._curplayer
 
     def check_for_win(self):
-        winner_status = self._check_win()
-        if winner_status:
-            win_type = winner_status
-            name = self.get_player_name(win_type)
+        winner = self._check_win()
+        if winner:
+            name = self._get_player_name(winner)
             print("Player", name,"won!")
             pg.time.wait(1000)
             self._change_sides()
@@ -119,10 +118,15 @@ class GameManager:
 
         return VOID
 
-    def get_player_name(self, sought_type):
+    def _get_player_name(self, sought_type):
         for player in self._players:
             if player.cell_type == sought_type:
                 return player.name
+
+    def _get_index_of_type(self, sought_type):
+        for ind, player in enumerate(self._players):
+            if player.cell_type == sought_type:
+                return ind
 
     def new_field(self):
         field = self.field
@@ -132,6 +136,7 @@ class GameManager:
     def _change_sides(self):
         player1, player2 = self._players
         player1.cell_type,player2.cell_type=player2.cell_type,player1.cell_type
+        self._curplayer = self._get_index_of_type(CROSS)
 
 
 class GameField:
