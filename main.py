@@ -2,8 +2,6 @@ import pygame as pg
 from constants import *
 from math import floor
 
-
-VERSION = "0.9"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 CELL_SIZE = 100
@@ -24,6 +22,7 @@ class Player:
     def __init__(self, name, cell_type):
         self.name = name
         self.cell_type = cell_type
+        self.win_count = 0
 
 
 class GameWindow:
@@ -32,7 +31,7 @@ class GameWindow:
     Responsible for displaying game field and other buttons in window.
     Contains mainloop of the game and game manager.
     """
-    def __init__(self, name1, name2):
+    def __init__(self):
         pg.init()
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
@@ -40,14 +39,15 @@ class GameWindow:
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
 
-        player1 = Player(name1, CROSS)
-        player2 = Player(name2, ZERO)
+        player1 = Player("Petr", CROSS)
+        player2 = Player("Vasyan", ZERO)
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
         self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
-        screamer_image = pg.image.load("resources/screamer.jpeg")
+        screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
+        self.score = self._game_manager.get_score()
 
     def main_loop(self):
         finished = False
@@ -61,14 +61,15 @@ class GameWindow:
                 elif event.type == pg.MOUSEBUTTONUP:
                     x, y = pg.mouse.get_pos()
                     click_area = self._get_click_area(x, y)
-
                     if click_area == "FIELD":
                         i, j = self._field_widget.get_cell_pos(x, y)
                         self._game_manager.handle_click(i, j)
 
             self._field_widget.draw()
+            self._draw_score(self.score)
 
             if self._game_manager.check_game_ended():
+                self.score = self._game_manager.get_score()
                 self._draw_game_status(self._game_manager.game_status)
                 pg.display.flip()
                 pg.time.wait(GAME_ROUND_DELAY)
@@ -77,10 +78,12 @@ class GameWindow:
             else:
                 self._draw_game_status(self._game_manager.game_status)
 
-            if finished:
-                self.screen.blit(self._screamer_image, (0, 0))
-                pg.display.flip()
-                pg.time.wait(SCREAMER_DURATION)
+            # THIS IS AN EASTER EGG
+            #
+            # if finished:
+            #     self.screen.blit(self._screamer_image, (0, 0))
+            #     pg.display.flip()
+            #     pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             clock.tick(TICKRATE)
@@ -106,6 +109,9 @@ class GameWindow:
 
         self.screen.blit(status_surface, (x, y))
 
+    def _draw_score(self, score):
+        pass
+
 
 class GameManager:
     """Game manager, running proccesses."""
@@ -125,9 +131,11 @@ class GameManager:
 
 
     def check_game_ended(self):
-        winner = self._check_win()
-        if winner:
-            name = self._get_player_name(winner)
+        winning_cell = self._check_win()
+        if winning_cell:
+            winner = self._players[self._get_index_of_type(winning_cell)]
+            name = winner.name
+            winner.win_count =+ 1
             self.game_status = f"Player {name} won!"
             return True
 
@@ -160,11 +168,6 @@ class GameManager:
 
         return VOID
 
-    def _get_player_name(self, sought_type):
-        for player in self._players:
-            if player.cell_type == sought_type:
-                return player.name
-
     def _get_index_of_type(self, sought_type):
         for ind, player in enumerate(self._players):
             if player.cell_type == sought_type:
@@ -180,6 +183,12 @@ class GameManager:
         player1, player2 = self._players
         player1.cell_type,player2.cell_type=player2.cell_type,player1.cell_type
         self._curplayer = self._get_index_of_type(CROSS)
+
+    def get_score(self):
+        player1, player2 = self._players
+        return {player1.name: player1.win_count,
+                player2.name: player2.win_count}
+
 
 
 class GameField:
@@ -257,10 +266,7 @@ class GameFieldView:
 
 
 def main():
-    print(f"Welcome to Tic-Tac-Toe Game (v. {VERSION})")
-    name1 = input("Enter first player: ")
-    name2 = input("Enter second player: ")
-    window = GameWindow(name1, name2)
+    window = GameWindow()
     window.main_loop()
     pg.quit()
 
