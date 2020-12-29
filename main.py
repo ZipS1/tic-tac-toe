@@ -7,6 +7,8 @@ WINDOW_TITLE = "Tic-Tac-Toe"
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 50
+FIELD_DISTANCE = 50
+STATUS_FONT_SIZE = 30
 TICKRATE = 60
 
 
@@ -40,6 +42,11 @@ class GameWindow:
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
 
+        self.status_y = (self._field_widget.height +
+                                FIELD_DISTANCE + FIELD_Y)
+        self.status_x = self._width // 2
+        self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
+
     def main_loop(self):
         finished = False
         clock = pg.time.Clock()
@@ -51,27 +58,32 @@ class GameWindow:
                     finished = True
                 elif event.type == pg.MOUSEBUTTONUP:
                     x, y = pg.mouse.get_pos()
-                    click_area = self.get_click_area(x, y)
+                    click_area = self._get_click_area(x, y)
 
                     if click_area == "FIELD":
                         i, j = self._field_widget.get_cell_pos(x, y)
                         self._game_manager.handle_click(i, j)
 
             self._field_widget.draw()
+            self._draw_game_status(self._game_manager.game_status)
             pg.display.flip()
             self._game_manager.check_for_win()
             clock.tick(TICKRATE)
 
-    def get_click_area(self, x, y):
+    def _get_click_area(self, x, y):
         x1 = self._field_widget.x
         y1 = FIELD_Y
         x2 = x1 + self._field_widget.width
         y2 = y1 + self._field_widget.height
-        if self.is_in_rect(x, y, x1, y1, x2, y2):
+        if self._is_in_rect(x, y, x1, y1, x2, y2):
             return "FIELD"
 
-    def is_in_rect(self, x, y, x1, y1, x2, y2):
+    def _is_in_rect(self, x, y, x1, y1, x2, y2):
         return x >= x1 and y >= y1 and x <= x2 and y <= y2
+
+    def _draw_game_status(self, status):
+        status_surface = self.status_font.render(status, False, BLACK)
+        self.screen.blit(status_surface, (self.status_x, self.status_y))
 
 
 class GameManager:
@@ -80,17 +92,19 @@ class GameManager:
         self._players = [player1, player2]
         self._curplayer = self._get_index_of_type(CROSS)
         self.field = GameField(3, 3)
+        self.game_status = f"{self._players[self._curplayer].name}'s turn"
 
     def handle_click(self, x, y):
         if self.field.cells[y][x] == 0:
             self.field.cells[y][x] = self._players[self._curplayer].cell_type
             self._curplayer = 1 - self._curplayer
+            self.game_status = f"{self._players[self._curplayer].name}'s turn"
 
     def check_for_win(self):
         winner = self._check_win()
         if winner:
             name = self._get_player_name(winner)
-            print("Player", name,"won!")
+            self.game_status = f"Player {name} won!"
             pg.time.wait(1000)
             self._change_sides()
             self.new_field()
