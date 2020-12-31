@@ -6,6 +6,8 @@ WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
 ANTI_ALIAS = True
+INPUT_FIELD_SIZE = (500, 75)
+INPUT_FIELD_BORDER_WIDTH = 3
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 30
@@ -33,8 +35,8 @@ class Player:
 class GameWindow:
     """Class of game window.
 
-    Responsible for displaying game field and other buttons in window.
-    Contains mainloop of the game and game manager.
+    Responsible for displaying game field and other widgets in window.
+    Contains game and name input loops and game manager.
     """
     def __init__(self, name1="Petr", name2="Vasyan"):
         pg.init()
@@ -54,10 +56,10 @@ class GameWindow:
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self._score = self._game_manager.get_score()
+        self.clock = pg.time.Clock()
 
     def game_loop(self):
         finished = False
-        clock = pg.time.Clock()
         while not finished:
             self.screen.fill(WHITE)
 
@@ -92,7 +94,7 @@ class GameWindow:
             #     pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
-            clock.tick(TICKRATE)
+            self.clock.tick(TICKRATE)
 
     def _get_click_area(self, x, y):
         x1 = self._field_widget.x
@@ -129,11 +131,33 @@ class GameWindow:
         self.screen.blit(score_surface, (score_x, score_y))
 
     def name_input_loop(self):
-        return
+        input_rect_length = INPUT_FIELD_SIZE[0]
+        input_rect_height = INPUT_FIELD_SIZE[1]
+        input_rect_x = (self._width - input_rect_length) // 2
+        input_rect_y = (self._height - input_rect_height) // 2
+        print(input_rect_x, input_rect_y)
+        finished = False
+        while not finished:
+            self.screen.fill(WHITE)
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    finished = True
+
+            pg.draw.rect(self.screen, BLACK,
+                        (input_rect_x, input_rect_y,
+                        input_rect_length, input_rect_height),
+                        INPUT_FIELD_BORDER_WIDTH)
+            pg.display.flip()
+            self.clock.tick(TICKRATE)
 
 
 class GameManager:
-    """Game manager, running proccesses."""
+    """Class of game manager.
+
+    Responsible for correct gameflow.
+    Contains field.
+    """
     def __init__(self, player1, player2):
         self._players = [player1, player2]
         self._curplayer = self._get_index_of_type(CROSS)
@@ -223,7 +247,8 @@ class GameField:
 class GameFieldView:
     """Game field widget.
 
-    Reflects field on window, initially handles click on field.
+    Reflects field on window.
+    Initially handles click on field and sends it to game manager
     """
     def __init__(self, screen, field):
         self.field = field
@@ -286,8 +311,8 @@ def main():
     window = GameWindow()
     names = window.name_input_loop()
     if names:
-        name1, name2 = names
-        window.game_loop(name1, name2)
+        player_name1, player_name2 = names
+        window.game_loop(player_name1, player_name2)
     else:
         window.game_loop()
     pg.quit()

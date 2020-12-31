@@ -1,6 +1,7 @@
 # colors
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+GREEN = (0,140,0)
 
 # game constants
 VOID = 0
