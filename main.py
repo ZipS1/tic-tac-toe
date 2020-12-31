@@ -2,7 +2,6 @@ import pygame as pg
 from constants import *
 from math import floor
 
-VERSION = "0.95"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 CELL_SIZE = 100
@@ -35,7 +34,7 @@ class GameWindow:
     Responsible for displaying game field and other buttons in window.
     Contains mainloop of the game and game manager.
     """
-    def __init__(self, name1, name2):
+    def __init__(self):
         pg.init()
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
@@ -43,8 +42,8 @@ class GameWindow:
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
 
-        player1 = Player(name1, CROSS)
-        player2 = Player(name2, ZERO)
+        player1 = Player("Petr", CROSS)
+        player2 = Player("Vasyan", ZERO)
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
@@ -281,12 +280,10 @@ class GameFieldView:
 
 
 def main():
-    print(f"Welcome to Tic-Tac-Toe Game (v. {VERSION})")
-    name1 = input("Enter first player: ")
-    name2 = input("Enter second player: ")
-    window = GameWindow(name1, name2)
+    window = GameWindow()
     window.main_loop()
     pg.quit()
+
 
 if __name__ == '__main__':
     main()
