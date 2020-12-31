@@ -9,6 +9,8 @@ ANTI_ALIAS = True
 INPUT_FIELD_SIZE = (500, 75)
 INPUT_FIELD_BORDER_WIDTH = 3
 INPUT_TEXT_INDENT_LEFT = 5
+MSG_DISTANCE_FROM_INPUT_FIELD = 50
+PROMPT_FONT_SIZE = 90
 STATUS_FONT_SIZE = 60
 SCORE_FONT_SIZE = 70
 INPUT_FONT_SIZE = 90
@@ -21,6 +23,61 @@ SCORE_DISTANCE_FROM_WORD_SCORE = 45
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
 SCREAMER_DURATION = 20
+
+
+class NameInputWindow:
+    def __init__(self):
+        self._width = WINDOW_SIZE[0]
+        self._height = WINDOW_SIZE[1]
+        self._title = WINDOW_TITLE
+        self.screen = pg.display.set_mode((self._width, self._height))
+        pg.display.set_caption(self._title)
+        self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
+        self._prompt_font = pg.font.SysFont(GAME_FONT, PROMPT_FONT_SIZE)
+        self.clock = pg.time.Clock()
+
+        self.input_rect_length = INPUT_FIELD_SIZE[0]
+        self.input_rect_height = INPUT_FIELD_SIZE[1]
+        self.input_rect_x = (self._width - self.input_rect_length) // 2
+        self.input_rect_y = (self._height - self.input_rect_height) // 2
+        name = "Test Name"
+        self.input_text_surface = self._input_font.render(name,
+                                                     ANTI_ALIAS, BLACK)
+        self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
+        self.input_text_y = (self.input_rect_y + self.input_rect_height -
+                        self.input_text_surface.get_height())
+        self.prompt_msg = self._prompt_font.render("Enter names",
+                                                    ANTI_ALIAS, BLACK)
+        self.msg_x = (self._width - self.prompt_msg.get_width()) // 2
+        self.msg_y = (self.input_rect_y - MSG_DISTANCE_FROM_INPUT_FIELD -
+                self.prompt_msg.get_height())
+
+
+    def name_input_loop(self):
+        finished = False
+        while not finished:
+            self.screen.fill(WHITE)
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    finished = True
+                elif event.type == pg.KEYDOWN:
+                    self._handle_name_input()
+
+            self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
+            pg.draw.rect(self.screen, BLACK,
+                        (self.input_rect_x, self.input_rect_y,
+                        self.input_rect_length, self.input_rect_height),
+                        INPUT_FIELD_BORDER_WIDTH)
+            self.screen.blit(self.input_text_surface,
+                            (self.input_text_x, self.input_text_y))
+
+
+            pg.display.flip()
+            self.clock.tick(TICKRATE)
+
+    def _handle_name_input(self):
+        pass
 
 
 class Player:
@@ -41,7 +98,6 @@ class GameWindow:
     Contains game and name input loops and game manager.
     """
     def __init__(self, name1="Petr", name2="Vasyan"):
-        pg.init()
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
         self._title = WINDOW_TITLE
@@ -55,7 +111,6 @@ class GameWindow:
         self._field_widget = GameFieldView(self.screen, field)
         self._status_font = pg.font.SysFont(GAME_FONT, STATUS_FONT_SIZE)
         self._score_font = pg.font.SysFont(GAME_FONT, SCORE_FONT_SIZE)
-        self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self._score = self._game_manager.get_score()
@@ -133,34 +188,6 @@ class GameWindow:
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
         self.screen.blit(score_surface, (score_x, score_y))
-
-    def name_input_loop(self):
-        input_rect_length = INPUT_FIELD_SIZE[0]
-        input_rect_height = INPUT_FIELD_SIZE[1]
-        input_rect_x = (self._width - input_rect_length) // 2
-        input_rect_y = (self._height - input_rect_height) // 2
-        input_text_surface = self._input_font.render("Test Text",
-                                                     ANTI_ALIAS, BLACK)
-        input_text_x = input_rect_x + INPUT_TEXT_INDENT_LEFT
-        input_text_y = (input_rect_y + input_rect_height -
-                        input_text_surface.get_height())
-
-        finished = False
-        while not finished:
-            self.screen.fill(WHITE)
-
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    finished = True
-
-            pg.draw.rect(self.screen, BLACK,
-                        (input_rect_x, input_rect_y,
-                        input_rect_length, input_rect_height),
-                        INPUT_FIELD_BORDER_WIDTH)
-            self.screen.blit(input_text_surface, (input_text_x, input_text_y))
-
-            pg.display.flip()
-            self.clock.tick(TICKRATE)
 
 
 class GameManager:
@@ -319,13 +346,16 @@ class GameFieldView:
 
 
 def main():
-    window = GameWindow()
-    names = window.name_input_loop()
+    pg.init()
+    naming_window = NameInputWindow()
+    game_window = GameWindow()
+
+    names = naming_window.name_input_loop()
     if names:
         player_name1, player_name2 = names
-        window.game_loop(player_name1, player_name2)
+        game_window.game_loop(player_name1, player_name2)
     else:
-        window.game_loop()
+        game_window.game_loop()
     pg.quit()
 
 
