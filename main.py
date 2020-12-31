@@ -8,14 +8,16 @@ GAME_FONT = "Comic Sans MS"
 ANTI_ALIAS = True
 INPUT_FIELD_SIZE = (500, 75)
 INPUT_FIELD_BORDER_WIDTH = 3
+INPUT_TEXT_INDENT_LEFT = 5
+STATUS_FONT_SIZE = 60
+SCORE_FONT_SIZE = 70
+INPUT_FONT_SIZE = 90
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 30
 STATUS_WIDGET_DISTANCE_FROM_FIELD = 25
 SCORE_WIDGET_DISTANCE_FROM_BOTTOM = 175
 SCORE_DISTANCE_FROM_WORD_SCORE = 45
-STATUS_FONT_SIZE = 60
-SCORE_FONT_SIZE = 70
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
 SCREAMER_DURATION = 20
@@ -53,6 +55,7 @@ class GameWindow:
         self._field_widget = GameFieldView(self.screen, field)
         self._status_font = pg.font.SysFont(GAME_FONT, STATUS_FONT_SIZE)
         self._score_font = pg.font.SysFont(GAME_FONT, SCORE_FONT_SIZE)
+        self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self._score = self._game_manager.get_score()
@@ -124,7 +127,8 @@ class GameWindow:
 
         values = list(self._score.values())
         score_string = f"{values[0]} : {values[1]}"
-        score_surface = self._score_font.render(score_string, ANTI_ALIAS, BLACK)
+        score_surface = self._score_font.render(score_string,
+                                                ANTI_ALIAS, BLACK)
         score_width = score_surface.get_width()
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
@@ -135,7 +139,11 @@ class GameWindow:
         input_rect_height = INPUT_FIELD_SIZE[1]
         input_rect_x = (self._width - input_rect_length) // 2
         input_rect_y = (self._height - input_rect_height) // 2
-        print(input_rect_x, input_rect_y)
+        input_text_surface = self._input_font.render("Test Text",
+                                                     ANTI_ALIAS, BLACK)
+        input_text_x = input_rect_x + INPUT_TEXT_INDENT_LEFT
+        input_text_y = (input_rect_y + input_rect_height - input_text_surface.get_height())
+
         finished = False
         while not finished:
             self.screen.fill(WHITE)
@@ -148,6 +156,8 @@ class GameWindow:
                         (input_rect_x, input_rect_y,
                         input_rect_length, input_rect_height),
                         INPUT_FIELD_BORDER_WIDTH)
+            self.screen.blit(input_text_surface, (input_text_x, input_text_y))
+
             pg.display.flip()
             self.clock.tick(TICKRATE)
 
