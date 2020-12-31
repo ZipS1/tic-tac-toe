@@ -27,20 +27,19 @@ SCREAMER_DURATION = 20
 
 class Window:
     def __init__(self):
-        pass
-
-
-class NameInputWindow(Window):
-    def __init__(self):
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
         self._title = WINDOW_TITLE
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
-        self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
-        self._prompt_font = pg.font.SysFont(GAME_FONT, PROMPT_MSG_FONT_SIZE)
         self.clock = pg.time.Clock()
 
+
+class NameInputWindow(Window):
+    def __init__(self):
+        super().__init__()
+        self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
+        self._prompt_font = pg.font.SysFont(GAME_FONT, PROMPT_MSG_FONT_SIZE)
         self.input_rect_length = INPUT_FIELD_SIZE[0]
         self.input_rect_height = INPUT_FIELD_SIZE[1]
         self.input_rect_x = (self._width - self.input_rect_length) // 2
@@ -56,7 +55,6 @@ class NameInputWindow(Window):
         self.msg_x = (self._width - self.prompt_msg.get_width()) // 2
         self.msg_y = (self.input_rect_y - MSG_DISTANCE_FROM_INPUT_FIELD -
                 self.prompt_msg.get_height())
-
 
     def name_input_loop(self):
         finished = False
@@ -103,12 +101,7 @@ class GameWindow(Window):
     Contains game and name input loops and game manager.
     """
     def __init__(self, name1="Petr", name2="Vasyan"):
-        self._width = WINDOW_SIZE[0]
-        self._height = WINDOW_SIZE[1]
-        self._title = WINDOW_TITLE
-        self.screen = pg.display.set_mode((self._width, self._height))
-        pg.display.set_caption(self._title)
-
+        super().__init__()
         player1 = Player(name1, CROSS)
         player2 = Player(name2, ZERO)
         self._game_manager = GameManager(player1, player2)
@@ -119,7 +112,6 @@ class GameWindow(Window):
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self._score = self._game_manager.get_score()
-        self.clock = pg.time.Clock()
 
     def game_loop(self):
         finished = False
