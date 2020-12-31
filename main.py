@@ -4,6 +4,7 @@ from math import floor
 
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
+GAME_FONT = "Comic Sans MS"
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 30
@@ -47,8 +48,8 @@ class GameWindow:
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
-        self.status_font = pg.font.SysFont('Comic Sans MS', STATUS_FONT_SIZE)
-        self.score_font = pg.font.SysFont('Comic Sans MS', SCORE_FONT_SIZE)
+        self.status_font = pg.font.SysFont(GAME_FONT, STATUS_FONT_SIZE)
+        self.score_font = pg.font.SysFont(GAME_FONT, SCORE_FONT_SIZE)
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self.score = self._game_manager.get_score()
@@ -143,7 +144,6 @@ class GameManager:
 
             self.field.filled_cells += 1
 
-
     def check_game_ended(self):
         winning_cell = self._check_win()
         if winning_cell:
@@ -202,7 +202,6 @@ class GameManager:
         player1, player2 = self._players
         return {player1.name: player1.win_count,
                 player2.name: player2.win_count}
-
 
 
 class GameField:
