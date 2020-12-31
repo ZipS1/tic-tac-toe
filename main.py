@@ -1,7 +1,9 @@
 import pygame as pg
 from constants import *
 from math import floor
+import sys
 
+VERSION = "1.0"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
@@ -10,6 +12,7 @@ INPUT_FIELD_SIZE = (500, 75)
 INPUT_FIELD_BORDER_WIDTH = 3
 INPUT_TEXT_INDENT_LEFT = 5
 MSG_DISTANCE_FROM_INPUT_FIELD = 50
+MIN_NAME_LENGTH = 3
 MAX_NAME_LENGTH = 9
 PROMPT_MSG_FONT_SIZE = 90
 STATUS_FONT_SIZE = 60
@@ -46,6 +49,7 @@ class NameInputWindow(Window):
         self.input_rect_x = (self._width - self.input_rect_length) // 2
         self.input_rect_y = (self._height - self.input_rect_height) // 2
         self.name = ""
+        self.names = []
         self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
         self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
@@ -59,14 +63,26 @@ class NameInputWindow(Window):
 
     def name_input_loop(self):
         finished = False
+        names = []
         while not finished:
             self.screen.fill(WHITE)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    finished = True
+                    pg.quit()
+                    sys.exit()
                 elif event.type == pg.KEYDOWN:
-                    self._handle_name_input(event.key)
+                    name = self._handle_name_input(event.key)
+                    if name:
+                        self.names.append(name)
+                        self.name = ""
+                        self.input_text_surface = \
+                        (self._input_font.render(self.name,
+                                                     ANTI_ALIAS, BLACK))
+                        self.screen.blit(self.input_text_surface,
+                            (self.input_text_x, self.input_text_y))
+                    if len(self.names) == 2:
+                        return self.names
 
             self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
             pg.draw.rect(self.screen, BLACK,
@@ -82,15 +98,18 @@ class NameInputWindow(Window):
     def _handle_name_input(self, key):
         if key == pg.K_BACKSPACE:
             self.name = self.name[0:-1]
+        elif key == pg.K_RETURN and len(self.name) >= MIN_NAME_LENGTH:
+
+            return self.name
         elif key in range(0x110000):
             if len(self.name) == MAX_NAME_LENGTH:
                 return
             self.name += chr(key)
             if len(self.name) == 1:
                 self.name = self.name.capitalize()
+
         self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
-
 
 
 class Player:
@@ -353,16 +372,17 @@ class GameFieldView:
 
 
 def main():
+    print(f"Welcome to Tic-Tac-Toe Game (v.{VERSION})")
     pg.init()
     naming_window = NameInputWindow()
-    game_window = GameWindow()
-
     names = naming_window.name_input_loop()
     if names:
         player_name1, player_name2 = names
-        game_window.game_loop(player_name1, player_name2)
+        game_window = GameWindow(player_name1, player_name2)
     else:
-        game_window.game_loop()
+        game_window = GameWindow()
+    game_window.game_loop()
+
     pg.quit()
 
 
