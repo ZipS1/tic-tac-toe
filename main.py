@@ -5,6 +5,7 @@ from math import floor
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
+ANTI_ALIAS = True
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
 FIELD_Y = 30
@@ -48,11 +49,11 @@ class GameWindow:
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
-        self.status_font = pg.font.SysFont(GAME_FONT, STATUS_FONT_SIZE)
-        self.score_font = pg.font.SysFont(GAME_FONT, SCORE_FONT_SIZE)
+        self._status_font = pg.font.SysFont(GAME_FONT, STATUS_FONT_SIZE)
+        self._score_font = pg.font.SysFont(GAME_FONT, SCORE_FONT_SIZE)
         screamer_image = pg.image.load("resources/screamer.jpeg").convert()
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
-        self.score = self._game_manager.get_score()
+        self._score = self._game_manager.get_score()
 
     def main_loop(self):
         finished = False
@@ -71,10 +72,10 @@ class GameWindow:
                         self._game_manager.handle_click(i, j)
 
             self._field_widget.draw()
-            self._draw_score(self.score)
+            self._draw_score(self._score)
 
             if self._game_manager.check_game_ended():
-                self.score = self._game_manager.get_score()
+                self._score = self._game_manager.get_score()
                 self._draw_game_status(self._game_manager.game_status)
                 pg.display.flip()
                 pg.time.wait(GAME_ROUND_DELAY)
@@ -105,7 +106,7 @@ class GameWindow:
         return x >= x1 and y >= y1 and x <= x2 and y <= y2
 
     def _draw_game_status(self, status):
-        status_surface = self.status_font.render(status, False, BLACK)
+        status_surface = self._status_font.render(status, ANTI_ALIAS, BLACK)
         status_width  = status_surface.get_width()
         x = (self._width - status_width) // 2
         y = (self._field_widget.height +
@@ -113,15 +114,15 @@ class GameWindow:
         self.screen.blit(status_surface, (x, y))
 
     def _draw_score(self, score):
-        word_surface = self.score_font.render("SCORE", False, BLACK)
+        word_surface = self._score_font.render("SCORE", ANTI_ALIAS, BLACK)
         word_width = word_surface.get_width()
         word_x = (self._width - word_width) // 2
         word_y = self._height - SCORE_WIDGET_DISTANCE_FROM_BOTTOM
         self.screen.blit(word_surface, (word_x, word_y))
 
-        values = list(self.score.values())
+        values = list(self._score.values())
         score_string = f"{values[0]} : {values[1]}"
-        score_surface = self.score_font.render(score_string, False, BLACK)
+        score_surface = self._score_font.render(score_string, ANTI_ALIAS, BLACK)
         score_width = score_surface.get_width()
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
