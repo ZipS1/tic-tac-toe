@@ -10,7 +10,7 @@ INPUT_FIELD_SIZE = (500, 75)
 INPUT_FIELD_BORDER_WIDTH = 3
 INPUT_TEXT_INDENT_LEFT = 5
 MSG_DISTANCE_FROM_INPUT_FIELD = 50
-PROMPT_FONT_SIZE = 90
+PROMPT_MSG_FONT_SIZE = 90
 STATUS_FONT_SIZE = 60
 SCORE_FONT_SIZE = 70
 INPUT_FONT_SIZE = 90
@@ -33,7 +33,7 @@ class NameInputWindow:
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
         self._input_font = pg.font.SysFont(GAME_FONT, INPUT_FONT_SIZE)
-        self._prompt_font = pg.font.SysFont(GAME_FONT, PROMPT_FONT_SIZE)
+        self._prompt_font = pg.font.SysFont(GAME_FONT, PROMPT_MSG_FONT_SIZE)
         self.clock = pg.time.Clock()
 
         self.input_rect_length = INPUT_FIELD_SIZE[0]

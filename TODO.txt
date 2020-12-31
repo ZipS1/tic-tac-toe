@@ -2,6 +2,7 @@ GAME FEATURES:
 1. Highlighting line in case of winning
 2. Brightness setting
 3. Edit cell images, make it with no white background
+4. Reduce screamer duration
 
 CODE STRUCTRURE:
 1. Make a parent class for windows
