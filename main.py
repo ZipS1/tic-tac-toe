@@ -25,7 +25,12 @@ TICKRATE = 60
 SCREAMER_DURATION = 20
 
 
-class NameInputWindow:
+class Window:
+    def __init__(self):
+        pass
+
+
+class NameInputWindow(Window):
     def __init__(self):
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
@@ -91,7 +96,7 @@ class Player:
         self.win_count = 0
 
 
-class GameWindow:
+class GameWindow(Window):
     """Class of game window.
 
     Responsible for displaying game field and other widgets in window.
