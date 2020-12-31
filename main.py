@@ -36,7 +36,7 @@ class GameWindow:
     Responsible for displaying game field and other buttons in window.
     Contains mainloop of the game and game manager.
     """
-    def __init__(self):
+    def __init__(self, name1="Petr", name2="Vasyan"):
         pg.init()
         self._width = WINDOW_SIZE[0]
         self._height = WINDOW_SIZE[1]
@@ -44,8 +44,8 @@ class GameWindow:
         self.screen = pg.display.set_mode((self._width, self._height))
         pg.display.set_caption(self._title)
 
-        player1 = Player("Petr", CROSS)
-        player2 = Player("Vasyan", ZERO)
+        player1 = Player(name1, CROSS)
+        player2 = Player(name2, ZERO)
         self._game_manager = GameManager(player1, player2)
         field = self._game_manager.field
         self._field_widget = GameFieldView(self.screen, field)
@@ -55,7 +55,7 @@ class GameWindow:
         self._screamer_image = pg.transform.scale(screamer_image, WINDOW_SIZE)
         self._score = self._game_manager.get_score()
 
-    def main_loop(self):
+    def game_loop(self):
         finished = False
         clock = pg.time.Clock()
         while not finished:
@@ -127,6 +127,9 @@ class GameWindow:
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
         self.screen.blit(score_surface, (score_x, score_y))
+
+    def name_input_loop(self):
+        return
 
 
 class GameManager:
@@ -281,7 +284,12 @@ class GameFieldView:
 
 def main():
     window = GameWindow()
-    window.main_loop()
+    names = window.name_input_loop()
+    if names:
+        name1, name2 = names
+        window.game_loop(name1, name2)
+    else:
+        window.game_loop()
     pg.quit()
 
 
