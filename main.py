@@ -112,17 +112,6 @@ class NameInputWindow(Window):
                                                      ANTI_ALIAS, BLACK)
 
 
-class Player:
-    """Player class.
-
-    Contains type of cell (cross, zero) and name of the player.
-    """
-    def __init__(self, name, cell_type):
-        self.name = name
-        self.cell_type = cell_type
-        self.win_count = 0
-
-
 class GameWindow(Window):
     """Class of game window.
 
@@ -214,6 +203,17 @@ class GameWindow(Window):
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
         self.screen.blit(score_surface, (score_x, score_y))
+
+
+class Player:
+    """Player class.
+
+    Contains type of cell (cross, zero) and name of the player.
+    """
+    def __init__(self, name, cell_type):
+        self.name = name
+        self.cell_type = cell_type
+        self.win_count = 0
 
 
 class GameManager:
