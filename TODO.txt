@@ -1,0 +1,3 @@
+1. Highlighting line in case of winning
+2. Brightness setting
+3. Edit cell images, make it with no white background

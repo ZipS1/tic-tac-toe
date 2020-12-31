@@ -142,7 +142,8 @@ class GameWindow:
         input_text_surface = self._input_font.render("Test Text",
                                                      ANTI_ALIAS, BLACK)
         input_text_x = input_rect_x + INPUT_TEXT_INDENT_LEFT
-        input_text_y = (input_rect_y + input_rect_height - input_text_surface.get_height())
+        input_text_y = (input_rect_y + input_rect_height -
+                        input_text_surface.get_height())
 
         finished = False
         while not finished:
