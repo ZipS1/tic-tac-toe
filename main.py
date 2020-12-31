@@ -10,6 +10,7 @@ INPUT_FIELD_SIZE = (500, 75)
 INPUT_FIELD_BORDER_WIDTH = 3
 INPUT_TEXT_INDENT_LEFT = 5
 MSG_DISTANCE_FROM_INPUT_FIELD = 50
+MAX_NAME_LENGTH = 9
 PROMPT_MSG_FONT_SIZE = 90
 STATUS_FONT_SIZE = 60
 SCORE_FONT_SIZE = 70
@@ -44,8 +45,8 @@ class NameInputWindow(Window):
         self.input_rect_height = INPUT_FIELD_SIZE[1]
         self.input_rect_x = (self._width - self.input_rect_length) // 2
         self.input_rect_y = (self._height - self.input_rect_height) // 2
-        name = "Test Name"
-        self.input_text_surface = self._input_font.render(name,
+        self.name = ""
+        self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
         self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
         self.input_text_y = (self.input_rect_y + self.input_rect_height -
@@ -65,7 +66,7 @@ class NameInputWindow(Window):
                 if event.type == pg.QUIT:
                     finished = True
                 elif event.type == pg.KEYDOWN:
-                    self._handle_name_input()
+                    self._handle_name_input(event.key)
 
             self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
             pg.draw.rect(self.screen, BLACK,
@@ -75,12 +76,21 @@ class NameInputWindow(Window):
             self.screen.blit(self.input_text_surface,
                             (self.input_text_x, self.input_text_y))
 
-
             pg.display.flip()
             self.clock.tick(TICKRATE)
 
-    def _handle_name_input(self):
-        pass
+    def _handle_name_input(self, key):
+        if key == pg.K_BACKSPACE:
+            self.name = self.name[0:-1]
+        elif key in range(0x110000):
+            if len(self.name) == MAX_NAME_LENGTH:
+                return
+            self.name += chr(key)
+            if len(self.name) == 1:
+                self.name = self.name.capitalize()
+        self.input_text_surface = self._input_font.render(self.name,
+                                                     ANTI_ALIAS, BLACK)
+
 
 
 class Player:

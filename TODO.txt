@@ -7,3 +7,4 @@ GAME FEATURES:
 CODE STRUCTRURE:
 1. Make a parent class for windows
 2. Reduce amount of class attrbutes, leave necessary only
+3. Redraw game field lines
