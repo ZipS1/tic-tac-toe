@@ -168,8 +168,8 @@ class GameWindow(Window):
             #     pg.display.flip()
             #     pg.time.wait(SCREAMER_DURATION)
 
-            pg.display.flip()
-            self.clock.tick(TICKRATE)
+            # pg.display.flip()
+            # self.clock.tick(TICKRATE)
 
     def _get_click_area(self, x, y):
         x1 = self._field_widget.x
