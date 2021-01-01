@@ -5,6 +5,5 @@ GAME FEATURES:
 4. Reduce screamer duration
 
 CODE STRUCTRURE:
-1. Rework logic of name_input_loop
-2. Reduce amount of class attrbutes, leave necessary only
-3. Redraw game field lines
+1. Reduce amount of class attrbutes, leave necessary only
+2. Redraw game field lines
