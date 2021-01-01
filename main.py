@@ -210,7 +210,7 @@ class GameWindow(Window):
 class Player:
     """Player class.
 
-    Contains type of cell (cross, zero) and name of the player.
+    Contains type of cell (cross, zero), name, and win count
     """
     def __init__(self, name, cell_type):
         self.name = name
