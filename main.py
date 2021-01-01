@@ -70,12 +70,17 @@ class NameInputWindow(Window):
                     pg.quit()
                     sys.exit()
                 elif event.type == pg.KEYDOWN:
-                    entered = self._handle_name_input(event.key)
-                    if entered:
-                        self.names.append(self.name)
-                        self.name = ""
-                        self.input_text_surface = self._input_font.render(self.name,
-                                                     ANTI_ALIAS, BLACK)
+                        entered = self._handle_name_input(event.key)
+                        if entered:
+                            self.names.append(self.name)
+                            self.name = ""
+                            self.input_text_surface = self._input_font.render(self.name,
+                                                         ANTI_ALIAS, BLACK)
+
+            if len(self.names) == 2:
+                if self.names[0] == self.names[1]:
+                    print("Incorrect input")
+                    self.names.pop()
 
             self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
             pg.draw.rect(self.screen, BLACK,
@@ -156,10 +161,12 @@ class GameWindow(Window):
             else:
                 self._draw_game_status(self._game_manager.game_status)
 
-            if finished:
-                self.screen.blit(self._screamer_image, (0, 0))
-                pg.display.flip()
-                pg.time.wait(SCREAMER_DURATION)
+            # EASTER EGG
+            #
+            # if finished:
+            #     self.screen.blit(self._screamer_image, (0, 0))
+            #     pg.display.flip()
+            #     pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             self.clock.tick(TICKRATE)
