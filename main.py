@@ -3,7 +3,7 @@ from constants import *
 from math import floor
 import sys
 
-VERSION = "1.0"
+VERSION = "1.1"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
