@@ -13,7 +13,6 @@ INPUT_FIELD_BORDER_WIDTH = 3
 INPUT_TEXT_INDENT_LEFT = 5
 MSG_DISTANCE_FROM_INPUT_FIELD = 50
 MIN_NAME_LENGTH = 3
-MAX_NAME_LENGTH = 9
 PROMPT_MSG_FONT_SIZE = 90
 STATUS_FONT_SIZE = 60
 SCORE_FONT_SIZE = 70
@@ -50,6 +49,7 @@ class NameInputWindow(Window):
         self.input_rect_y = (self._height - self.input_rect_height) // 2
         self.name = ""
         self.names = []
+        self.max_name_width = self.input_rect_length - 2*INPUT_TEXT_INDENT_LEFT
         self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
         self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
@@ -62,9 +62,7 @@ class NameInputWindow(Window):
                 self.prompt_msg.get_height())
 
     def name_input_loop(self):
-        finished = False
-        names = []
-        while not finished:
+        while len(self.names) != 2:
             self.screen.fill(WHITE)
 
             for event in pg.event.get():
@@ -72,17 +70,12 @@ class NameInputWindow(Window):
                     pg.quit()
                     sys.exit()
                 elif event.type == pg.KEYDOWN:
-                    name = self._handle_name_input(event.key)
-                    if name:
-                        self.names.append(name)
+                    entered = self._handle_name_input(event.key)
+                    if entered:
+                        self.names.append(self.name)
                         self.name = ""
-                        self.input_text_surface = \
-                        (self._input_font.render(self.name,
-                                                     ANTI_ALIAS, BLACK))
-                        self.screen.blit(self.input_text_surface,
-                            (self.input_text_x, self.input_text_y))
-                    if len(self.names) == 2:
-                        return self.names
+                        self.input_text_surface = self._input_font.render(self.name,
+                                                     ANTI_ALIAS, BLACK)
 
             self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
             pg.draw.rect(self.screen, BLACK,
@@ -94,19 +87,23 @@ class NameInputWindow(Window):
 
             pg.display.flip()
             self.clock.tick(TICKRATE)
+        return self.names
 
     def _handle_name_input(self, key):
         if key == pg.K_BACKSPACE:
             self.name = self.name[0:-1]
         elif key == pg.K_RETURN and len(self.name) >= MIN_NAME_LENGTH:
-
-            return self.name
+            return True
         elif key in range(0x110000):
-            if len(self.name) == MAX_NAME_LENGTH:
+            if self.input_text_surface.get_width() >= self.max_name_width:
                 return
-            self.name += chr(key)
-            if len(self.name) == 1:
-                self.name = self.name.capitalize()
+
+            keys = pg.key.get_pressed()
+            shifted = bool(keys[pg.K_LSHIFT] or keys[pg.K_RSHIFT])
+            if shifted:
+                self.name += chr(key).upper()
+            else:
+                self.name += chr(key)
 
         self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
@@ -118,7 +115,7 @@ class GameWindow(Window):
     Responsible for displaying game field and other widgets in window.
     Contains game and name input loops and game manager.
     """
-    def __init__(self, name1="Petr", name2="Vasyan"):
+    def __init__(self, name1, name2):
         super().__init__()
         player1 = Player(name1, CROSS)
         player2 = Player(name2, ZERO)
