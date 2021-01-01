@@ -1,4 +1,5 @@
 GAME FEATURES:
 1. Highlighting line in case of winning
 2. Brightness setting
-3s. Reduce screamer duration
+3. Reduce screamer duration
+4. Make an error handler for NameInputWindow

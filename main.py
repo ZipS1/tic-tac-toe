@@ -156,12 +156,10 @@ class GameWindow(Window):
             else:
                 self._draw_game_status(self._game_manager.game_status)
 
-            # THIS IS AN EASTER EGG
-            #
-            # if finished:
-            #     self.screen.blit(self._screamer_image, (0, 0))
-            #     pg.display.flip()
-            #     pg.time.wait(SCREAMER_DURATION)
+            if finished:
+                self.screen.blit(self._screamer_image, (0, 0))
+                pg.display.flip()
+                pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             self.clock.tick(TICKRATE)
