@@ -168,8 +168,8 @@ class GameWindow(Window):
             #     pg.display.flip()
             #     pg.time.wait(SCREAMER_DURATION)
 
-            # pg.display.flip()
-            # self.clock.tick(TICKRATE)
+            pg.display.flip()
+            self.clock.tick(TICKRATE)
 
     def _get_click_area(self, x, y):
         x1 = self._field_widget.x
@@ -210,7 +210,7 @@ class GameWindow(Window):
 class Player:
     """Player class.
 
-    Contains type of cell (cross, zero) and name of the player.
+    Contains type of cell (cross, zero), name, and win count
     """
     def __init__(self, name, cell_type):
         self.name = name
