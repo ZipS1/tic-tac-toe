@@ -25,6 +25,7 @@ SCORE_WIDGET_DISTANCE_FROM_BOTTOM = 175
 SCORE_DISTANCE_FROM_WORD_SCORE = 45
 GAME_ROUND_DELAY = 1000
 TICKRATE = 60
+EGG_ENABLED = False
 SCREAMER_DURATION = 20
 
 
@@ -114,7 +115,7 @@ class NameInputWindow(Window):
             self.name = self.name[0:-1]
         elif key == pg.K_RETURN and len(self.name) >= MIN_NAME_LENGTH:
             return True
-        elif key in range(0x110000) and not key == pg.K_RETURN:
+        elif key in range(0x110000) and key != pg.K_RETURN:
             if self.input_text_surface.get_width() >= self.max_name_width:
                 return
 
@@ -181,12 +182,10 @@ class GameWindow(Window):
             else:
                 self._draw_game_status(self._game_manager.game_status)
 
-            # EASTER EGG
-            #
-            # if finished:
-            #     self.screen.blit(self._screamer_image, (0, 0))
-            #     pg.display.flip()
-            #     pg.time.wait(SCREAMER_DURATION)
+            if finished and EGG_ENABLED:
+                self.screen.blit(self._screamer_image, (0, 0))
+                pg.display.flip()
+                pg.time.wait(SCREAMER_DURATION)
 
             pg.display.flip()
             self.clock.tick(TICKRATE)
