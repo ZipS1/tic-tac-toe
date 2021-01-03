@@ -4,3 +4,4 @@ GAME FEATURES:
 3. Make settings
 	3.1 Get all constants from main file to settings or
 		something like this
+4. Make an AI 
