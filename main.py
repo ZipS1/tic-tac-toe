@@ -3,7 +3,7 @@ from constants import *
 from math import floor
 import sys
 
-VERSION = "1.1"
+VERSION = "1.2"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
@@ -90,6 +90,11 @@ class NameInputWindow(Window):
                     INPUT_FIELD_BORDER_WIDTH)
 
     def _draw_prompt(self):
+        self.prompt_msg_srf = self._prompt_font.render(self.prompt_msg,
+                                                    ANTI_ALIAS, BLACK)
+        self.msg_x = (self._width - self.prompt_msg_srf.get_width()) // 2
+        self.msg_y = (self.input_rect_y - MSG_DISTANCE_FROM_INPUT_FIELD -
+                self.prompt_msg_srf.get_height())
         self.screen.blit(self.prompt_msg_srf, (self.msg_x, self.msg_y))
 
     def _draw_input_text(self):
@@ -101,7 +106,7 @@ class NameInputWindow(Window):
     def _check_correct_name_input(self):
         if len(self.names) == 2:
             if self.names[0] == self.names[1]:
-                print("Incorrect input")
+                self.prompt_msg = "Same names!"
                 self.names.pop()
 
     def _handle_keydown(self, key):
