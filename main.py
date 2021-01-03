@@ -290,7 +290,7 @@ class GameManager:
         for x in range(self.field.width):
             if cells[0][x] != VOID:
                 if cells[0][x] == cells[1][x] and cells[1][x] == cells[2][x]:
-                    return (cells[0][x], (x, 0, 2, x))
+                    return (cells[0][x], (x, 0, x, 2))
 
         if cells[0][0] != VOID:
             if cells[0][0] == cells[1][1] and cells[1][1] == cells[2][2]:
