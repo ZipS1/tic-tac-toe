@@ -114,7 +114,7 @@ class NameInputWindow(Window):
             self.name = self.name[0:-1]
         elif key == pg.K_RETURN and len(self.name) >= MIN_NAME_LENGTH:
             return True
-        elif key in range(0x110000):
+        elif key in range(0x110000) and not key == pg.K_RETURN:
             if self.input_text_surface.get_width() >= self.max_name_width:
                 return
 
