@@ -70,31 +70,38 @@ class NameInputWindow(Window):
                     pg.quit()
                     sys.exit()
                 elif event.type == pg.KEYDOWN:
-                        entered = self._handle_name_input(event.key)
-                        if entered:
-                            self.names.append(self.name)
-                            self.name = ""
-                            self.input_text_surface = self._input_font.render(self.name,
-                                                         ANTI_ALIAS, BLACK)
+                        self._handle_name_input(event.key)
 
-            if len(self.names) == 2:
-                if self.names[0] == self.names[1]:
-                    print("Incorrect input")
-                    self.names.pop()
+            self._check_correct_name_input()
 
-            self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
-            pg.draw.rect(self.screen, BLACK,
-                        (self.input_rect_x, self.input_rect_y,
-                        self.input_rect_length, self.input_rect_height),
-                        INPUT_FIELD_BORDER_WIDTH)
-            self.screen.blit(self.input_text_surface,
-                            (self.input_text_x, self.input_text_y))
+            self._draw_prompt()
+            self._draw_input_rect()
+            self._draw_input_text()
 
             pg.display.flip()
             self.clock.tick(TICKRATE)
         return self.names
 
-    def _handle_name_input(self, key):
+    def _draw_input_rect(self):
+        pg.draw.rect(self.screen, BLACK,
+                    (self.input_rect_x, self.input_rect_y,
+                    self.input_rect_length, self.input_rect_height),
+                    INPUT_FIELD_BORDER_WIDTH)
+
+    def _draw_prompt(self):
+        self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
+
+    def _draw_input_text(self):
+        self.screen.blit(self.input_text_surface,
+                            (self.input_text_x, self.input_text_y))
+
+    def _check_correct_name_input(self):
+        if len(self.names) == 2:
+            if self.names[0] == self.names[1]:
+                print("Incorrect input")
+                self.names.pop()
+
+    def _handle_keydown(self, key):
         if key == pg.K_BACKSPACE:
             self.name = self.name[0:-1]
         elif key == pg.K_RETURN and len(self.name) >= MIN_NAME_LENGTH:
@@ -112,6 +119,14 @@ class NameInputWindow(Window):
 
         self.input_text_surface = self._input_font.render(self.name,
                                                      ANTI_ALIAS, BLACK)
+
+    def _handle_name_input(self, key):
+        entered = self._handle_keydown(key)
+        if entered:
+            self.names.append(self.name)
+            self.name = ""
+            self.input_text_surface = self._input_font.render(self.name,
+                                         ANTI_ALIAS, BLACK)
 
 
 class GameWindow(Window):
