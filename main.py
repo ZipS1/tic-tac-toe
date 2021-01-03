@@ -380,16 +380,26 @@ class GameFieldView:
         for y in range(self.field.height):
             for x in range(self.field.width):
                 if self.field.cells[y][x] == 1:
-                    x_coord, y_coord = self._get_image_coords(x, y)
+                    x_coord, y_coord = self._get_cell_coords(x, y)
                     self.screen.blit(self._zero_image, (x_coord, y_coord))
                 elif self.field.cells[y][x] == 2:
-                    x_coord, y_coord = self._get_image_coords(x, y)
+                    x_coord, y_coord = self._get_cell_coords(x, y)
                     self.screen.blit(self._cross_image, (x_coord, y_coord))
 
-    def _get_image_coords(self, i, j):
+    def _get_cell_coords(self, i, j):
         x = self.x + i*(CELL_SIZE + FIELD_LINE_WIDTH)
         y = self.y + j*(CELL_SIZE + FIELD_LINE_WIDTH)
         return x, y
+
+    def get_cell_center(self, i, j):
+        coords = self._get_cell_coords(i, j)
+        coords = [coord + CELL_SIZE//2 for coord in coords]
+        return coords
+
+    def draw_win_line(self, i1, j1, i2, j2):
+        x1, y1 = self.get_cell_center(i1, j1)
+        x2, y2 = self.get_cell_center(i2, j2)
+        pg.draw.line(self.screen, RED, (x1, y1), (x2, y2))
 
 
 def main():
