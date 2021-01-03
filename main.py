@@ -3,7 +3,7 @@ from constants import *
 from math import floor
 import sys
 
-VERSION = "1.2"
+VERSION = "1.3"
 WINDOW_SIZE = (800, 600)
 WINDOW_TITLE = "Tic-Tac-Toe"
 GAME_FONT = "Comic Sans MS"
@@ -19,6 +19,7 @@ SCORE_FONT_SIZE = 70
 INPUT_FONT_SIZE = 90
 CELL_SIZE = 100
 FIELD_LINE_WIDTH = 5
+WIN_LINE_WIDTH = 10
 FIELD_Y = 30
 STATUS_WIDGET_DISTANCE_FROM_FIELD = 25
 SCORE_WIDGET_DISTANCE_FROM_BOTTOM = 175
@@ -172,9 +173,12 @@ class GameWindow(Window):
             self._field_widget.draw()
             self._draw_score(self._score)
 
-            if self._game_manager.check_game_ended():
+            game_ended_status = self._game_manager.check_game_ended()
+            if game_ended_status[0]:
                 self._score = self._game_manager.get_score()
                 self._draw_game_status(self._game_manager.game_status)
+                if self._game_manager.game_status.endswith("won!"):
+                    self._field_widget.draw_win_line(*game_ended_status[1])
                 pg.display.flip()
                 pg.time.wait(GAME_ROUND_DELAY)
                 self._game_manager.change_sides()
@@ -258,19 +262,22 @@ class GameManager:
             self.field.filled_cells += 1
 
     def check_game_ended(self):
-        winning_cell = self._check_win()
+        winning_cell, win_type = self._check_win()
         if winning_cell:
             winner = self._players[self._get_index_of_type(winning_cell)]
             name = winner.name
             winner.win_count += 1
             self.game_status = f"Player {name} won!"
-            return True
+            if win_type:
+                return True, win_type
+            else:
+                return True, win_type
 
         if self.field.filled_cells == self.field.width * self.field.height:
             self.game_status = "It's a draw!"
-            return True
+            return True, win_type
 
-        return False
+        return False, win_type
 
     def _check_win(self):
         cells = self.field.cells
@@ -278,22 +285,22 @@ class GameManager:
         for y in range(self.field.height):
             if cells[y][0] != VOID:
                 if cells[y][0] == cells[y][1] and cells[y][1] == cells[y][2]:
-                    return cells[y][0]
+                    return (cells[y][0], (0, y, 2, y))
 
         for x in range(self.field.width):
             if cells[0][x] != VOID:
                 if cells[0][x] == cells[1][x] and cells[1][x] == cells[2][x]:
-                    return cells[0][x]
+                    return (cells[0][x], (x, 0, 2, x))
 
         if cells[0][0] != VOID:
             if cells[0][0] == cells[1][1] and cells[1][1] == cells[2][2]:
-                return cells[0][0]
+                return (cells[0][0], (0, 0, 2, 2))
 
         if cells[2][0] != VOID:
             if cells[2][0] == cells[1][1] and cells[1][1] == cells[0][2]:
-                return cells[2][0]
+                return (cells[2][0], (0, 2, 2, 0))
 
-        return VOID
+        return (VOID, (0,0,0,0))
 
     def _get_index_of_type(self, sought_type):
         for ind, player in enumerate(self._players):
@@ -399,7 +406,7 @@ class GameFieldView:
     def draw_win_line(self, i1, j1, i2, j2):
         x1, y1 = self.get_cell_center(i1, j1)
         x2, y2 = self.get_cell_center(i2, j2)
-        pg.draw.line(self.screen, RED, (x1, y1), (x2, y2))
+        pg.draw.line(self.screen, RED, (x1, y1), (x2, y2), WIN_LINE_WIDTH)
 
 
 def main():
