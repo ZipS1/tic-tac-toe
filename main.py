@@ -55,11 +55,12 @@ class NameInputWindow(Window):
         self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
         self.input_text_y = (self.input_rect_y + self.input_rect_height -
                         self.input_text_surface.get_height())
-        self.prompt_msg = self._prompt_font.render("Enter names",
+        self.prompt_msg = "Enter names"
+        self.prompt_msg_srf = self._prompt_font.render(self.prompt_msg,
                                                     ANTI_ALIAS, BLACK)
-        self.msg_x = (self._width - self.prompt_msg.get_width()) // 2
+        self.msg_x = (self._width - self.prompt_msg_srf.get_width()) // 2
         self.msg_y = (self.input_rect_y - MSG_DISTANCE_FROM_INPUT_FIELD -
-                self.prompt_msg.get_height())
+                self.prompt_msg_srf.get_height())
 
     def name_input_loop(self):
         while len(self.names) != 2:
@@ -89,9 +90,11 @@ class NameInputWindow(Window):
                     INPUT_FIELD_BORDER_WIDTH)
 
     def _draw_prompt(self):
-        self.screen.blit(self.prompt_msg, (self.msg_x, self.msg_y))
+        self.screen.blit(self.prompt_msg_srf, (self.msg_x, self.msg_y))
 
     def _draw_input_text(self):
+        self.input_text_surface = self._input_font.render(self.name,
+                                                     ANTI_ALIAS, BLACK)
         self.screen.blit(self.input_text_surface,
                             (self.input_text_x, self.input_text_y))
 
@@ -116,9 +119,6 @@ class NameInputWindow(Window):
                 self.name += chr(key).upper()
             else:
                 self.name += chr(key)
-
-        self.input_text_surface = self._input_font.render(self.name,
-                                                     ANTI_ALIAS, BLACK)
 
     def _handle_name_input(self, key):
         entered = self._handle_keydown(key)
