@@ -2,6 +2,4 @@ GAME FEATURES:
 1. Brightness setting
 2. Reduce screamer duration
 3. Make settings
-	3.1 Get all constants from main file to settings or
-		something like this
 4. Make an AI 
