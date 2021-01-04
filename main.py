@@ -148,7 +148,7 @@ class GameWindow(Window):
             self._field_widget.draw()
             self._draw_score(self._score)
 
-            self._end_game_handler()
+            self.handle_endgame()
 
             if finished and EGG_ENABLED:
                 self.screen.blit(self._screamer_image, (0, 0))
@@ -193,7 +193,7 @@ class GameWindow(Window):
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
         self.screen.blit(score_surface, (score_x, score_y))
 
-    def _end_game_handler(self):
+    def handle_endgame(self):
         game_ended_status = self._game_manager.check_game_ended()
         is_game_ended = game_ended_status[0]
         win_line_info = game_ended_status[1]
