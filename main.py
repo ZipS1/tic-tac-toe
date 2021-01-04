@@ -148,18 +148,7 @@ class GameWindow(Window):
             self._field_widget.draw()
             self._draw_score(self._score)
 
-            game_ended_status = self._game_manager.check_game_ended()
-            if game_ended_status[0]:
-                self._score = self._game_manager.get_score()
-                self._draw_game_status(self._game_manager.game_status)
-                if self._game_manager.game_status.endswith("won!"):
-                    self._field_widget.draw_win_line(*game_ended_status[1])
-                pg.display.flip()
-                pg.time.wait(GAME_ROUND_DELAY)
-                self._game_manager.change_sides()
-                self._game_manager.new_field()
-            else:
-                self._draw_game_status(self._game_manager.game_status)
+            self._end_game_handler()
 
             if finished and EGG_ENABLED:
                 self.screen.blit(self._screamer_image, (0, 0))
@@ -203,6 +192,22 @@ class GameWindow(Window):
         score_x = (self._width - score_width) // 2
         score_y = word_y + SCORE_DISTANCE_FROM_WORD_SCORE
         self.screen.blit(score_surface, (score_x, score_y))
+
+    def _end_game_handler(self):
+        game_ended_status = self._game_manager.check_game_ended()
+        is_game_ended = game_ended_status[0]
+        win_line_info = game_ended_status[1]
+        if is_game_ended:
+            self._score = self._game_manager.get_score()
+            self._draw_game_status(self._game_manager.game_status)
+            if self._game_manager.game_status.endswith("won!"):
+                self._field_widget.draw_win_line(*win_line_info)
+            pg.display.flip()
+            pg.time.wait(GAME_ROUND_DELAY)
+            self._game_manager.change_sides()
+            self._game_manager.new_field()
+        else:
+            self._draw_game_status(self._game_manager.game_status)
 
 
 class Player:
