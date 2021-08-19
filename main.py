@@ -31,7 +31,7 @@ class NameInputWindow(Window):
                                                      ANTI_ALIAS, BLACK)
         self.input_text_x = self.input_rect_x + INPUT_TEXT_INDENT_LEFT
         self.input_text_y = (self.input_rect_y + self.input_rect_height -
-                        self.input_text_surface.get_height())
+               self.input_text_surface.get_height() + TEXT_DIST_TO_RECT_BOTTOM)
         self.prompt_msg = "Enter names"
         self.prompt_msg_srf = self._prompt_font.render(self.prompt_msg,
                                                     ANTI_ALIAS, BLACK)
